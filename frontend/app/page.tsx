@@ -1,40 +1,58 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 interface JSendSuccessResponse {
-    data: object;
+    data: any[];
+}
+
+interface TodoItem {
+    id: number;
+    title: string;
+    completedAt: Date|null;
 }
 
 export default function Home() {
-    const [ping, setPingData] = useState<null|number>(null);
-    const [todoItemsData, setTodoItemsData] = useState<null|any>(null);
+    const [todoItemsData, setTodoItemsData] = useState<null|TodoItem[]>(null);
+    const todoItemsFetched = useRef(false);
 
-    useEffect(() => {
-        fetch('http://localhost/api/ping')
-            .then(response => response.json())
-            .then((json: {ack: number}) => setPingData(json.ack))
-            .catch(error => console.error(error));
-    }, []);
-
-    useEffect(() => {
+    function fetchTodoItems(): void {
         fetch('http://localhost/api/todo-items')
             .then(response => response.json())
             .then((json: JSendSuccessResponse) => {
-                setTodoItemsData(json.data);
-                console.log('json', json.data)
-                console.log('todoItemsData', todoItemsData)
+                return setTodoItemsData(json.data);
             })
             .catch(error => console.error(error));
-    }, []);
+    }
+
+    useEffect(() => {
+        if (!todoItemsFetched.current) {
+            todoItemsFetched.current = true;
+            fetchTodoItems()
+        }
+    }, [todoItemsData]);
+
+    function completeTodoItem(id: number) {
+        console.log(id);
+        fetchTodoItems();
+    }
 
     return (
-        <main className={'flex h-dvh w-dvw items-center justify-center'}>
-            <div>
-                <p>
-                    Backend ping: {ping ? ping.toString() : 'Loading ping response...'}
-                </p>
-            </div>
+        <main className={'flex flex-col h-dvh w-dvw items-center justify-center'}>
+            <div>Todo Items</div>
+            <ul className={'todo_items'}>
+                    {
+                        todoItemsData ? todoItemsData?.map((todoItem) => {
+                            return <li className={`item ${todoItem.completedAt ? 'line-through' : ''}`} key={todoItem.id}>
+                                <span>{todoItem.title}</span>
+                                {
+                                    todoItem.completedAt ? '' :
+                                        <button onClick={() => completeTodoItem(todoItem.id)}>Mark as finished</button>
+                                }
+                            </li>
+                        }) : 'Loading todoItems'
+                    }
+            </ul>
         </main>
     );
 }
