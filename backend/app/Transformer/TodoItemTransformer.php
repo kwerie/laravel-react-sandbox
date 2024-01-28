@@ -13,7 +13,7 @@ class TodoItemTransformer
         return [
             'id' => $todoItem->getId(),
             'title' => $todoItem->getTitle(),
-            'completedAt' => $todoItem->getCompletedAt()/*?->format('d-m-Y')*/,
+            'completedAt' => $todoItem->getCompletedAt()?->format('d-m-Y'),
         ];
     }
 

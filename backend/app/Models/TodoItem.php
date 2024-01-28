@@ -44,9 +44,13 @@ class TodoItem extends Model
         return $this;
     }
 
-    public function getCompletedAt(): Carbon|string|null
+    public function getCompletedAt(): Carbon|null
     {
-        return $this->completed_at;
+        if (!is_string($this->completed_at)) {
+            return null;
+        }
+
+        return new Carbon($this->completed_at);
     }
 
     public function setCompletedAt(?Carbon $completedAt): self

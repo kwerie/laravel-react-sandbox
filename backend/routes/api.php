@@ -20,3 +20,5 @@ Route::get('ping', function () {
 });
 
 Route::get('todo-items', [TodoItemsController::class, 'index']);
+Route::post('todo-items', [TodoItemsController::class, 'create']);
+Route::put('todo-items', [TodoItemsController::class, 'update']);

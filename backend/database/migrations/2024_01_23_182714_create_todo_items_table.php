@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('title');
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
         });
     }
 
